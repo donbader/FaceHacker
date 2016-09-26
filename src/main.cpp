@@ -67,8 +67,8 @@ int main( int argc, char ** argv )
 
     cv::Mat frame;
     cv::VideoCapture cap;
-    // cap.open(0);
-    cap.open("dataset/test.mp4");
+    cap.open(0);
+    // cap.open("dataset/test.mp4");
 
     //game loop
     GLint k=100;

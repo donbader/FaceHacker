@@ -95,7 +95,7 @@ void Face::objectOperation(FaceProgram* program, bool doTransform)
 
 				//scale
 				GLfloat ratio = genRatio_39_42() * (220.f / (320.f - _mesh.vertices[181][2]));
-				_objInProgram->scale_Model(ratio*1.2, ratio, ratio*1.2);
+				_objInProgram->scale_Model(ratio, ratio, ratio);
 
 
 				// rotate
