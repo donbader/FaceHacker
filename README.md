@@ -1,7 +1,8 @@
 # FaceHacker
 
-this is our project for school
+## our goal:
+[face2face](https://www.youtube.com/watch?v=ohmajJTcpNk)
 
-the goal is to reach face2face .
-
-this is temporary readme.
+## 3rd party:
+[dlib](http://dlib.net/)
+[eos](https://github.com/patrikhuber/eos)
