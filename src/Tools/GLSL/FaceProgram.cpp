@@ -57,7 +57,7 @@ void FaceProgram::render(){
         for(int j=0; j<10 ; ++j){
             setUniformMat4(("Bone["+to_string(j)+"]").c_str(), _VAOs[i]->bones[j]);
         }
-        glDrawElements(GL_LINES, _VAOs[i]->sizeOf(_VAOs[i]->VBO_INDICE), GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, _VAOs[i]->sizeOf(_VAOs[i]->VBO_INDICE), GL_UNSIGNED_INT, nullptr);
     }
     glBindVertexArray(0);
 }

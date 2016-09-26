@@ -29,7 +29,7 @@ uniform vec3 materialSpecularFactor = vec3(0.3, 0.3, 0.3);
 
 
 // Mode Control
-uniform int mode = 4; // 0 = texture mode, 1 = light mode, 2 = blend mode
+uniform int mode = 1; // 0 = texture mode, 1 = light mode, 2 = blend mode
 
 void main()
 {

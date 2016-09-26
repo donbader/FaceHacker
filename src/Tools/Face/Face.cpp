@@ -86,13 +86,16 @@ void Face::objectOperation(FaceProgram* program, bool doTransform)
 
 			if(doTransform){
 				//move to anchor
-				_objInProgram->translate_Model(-_mesh.vertices[181][0], -_mesh.vertices[181][1], -_mesh.vertices[181][2]);
+				GLfloat anchor_x = (_mesh.vertices[181][0] + _mesh.vertices[614][0]) / 2;
+				GLfloat anchor_y = (_mesh.vertices[181][1] + _mesh.vertices[614][1]) / 2;
+				GLfloat anchor_z = (_mesh.vertices[181][2] + _mesh.vertices[614][2]) / 2;
+				_objInProgram->translate_Model(-anchor_x, -anchor_y, -anchor_z);
 
 
 
 				//scale
 				GLfloat ratio = genRatio_39_42() * (220.f / (320.f - _mesh.vertices[181][2]));
-				_objInProgram->scale_Model(ratio, ratio, ratio);
+				_objInProgram->scale_Model(ratio*1.2, ratio, ratio*1.2);
 
 
 				// rotate
@@ -374,7 +377,9 @@ render::Mesh Face::genMesh_4() {
 
 glm::vec3 Face::genDelta_39() {
 	glm::vec3 p;
-	p = glm::vec3(_current_landmarks[39].coordinates[0] * 640 / _frame.cols - 320, 180 - _current_landmarks[39].coordinates[1] * 360 / _frame.rows, 0);
+	GLfloat x = (_current_landmarks[39].coordinates[0] + _current_landmarks[42].coordinates[0]) / 2;
+	GLfloat y = (_current_landmarks[39].coordinates[1] + _current_landmarks[42].coordinates[1]) / 2;
+	p = glm::vec3(x * 640 / _frame.cols - 320, 180 - y * 360 / _frame.rows, 0);
 	return p;
 }
 
