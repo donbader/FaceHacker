@@ -5,4 +5,5 @@
 
 ## 3rd party:
 [dlib](http://dlib.net/)
+<br>
 [eos](https://github.com/patrikhuber/eos)
