@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#define DEBUG
+// #define DEBUG
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
@@ -25,9 +25,12 @@
 
 #else
 
-#define _DEBUG_MSG
+#define _DEBUG_MSG(msg)
 #define _DEBUG_TIMER_INIT()
 #define	_DEBUG_TIMER_ZERO()
-#define _DEBUG_TIME
+#define _DEBUG_TIME(name)
+#define _PRINT_TIME(name, instruction) do{	\
+										instruction;		 \
+										}while(0);
 
 #endif

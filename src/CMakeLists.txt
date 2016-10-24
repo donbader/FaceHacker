@@ -1,10 +1,10 @@
 ##### 設定環境
 	cmake_minimum_required(VERSION 3.2)
 	project(FACEHACKER)
-	add_subdirectory(tools)
+	add_subdirectory(Tools)
 
 ##### 設定 flags
-	set(CMAKE_CXX_FLAGS "-std=c++14 -g")
+	set(CMAKE_CXX_FLAGS "-pthread -std=c++14 -g ")
 	# set(BUILD_SHARED_LIBS ON)
 
 ##### 設定各種路徑
@@ -12,8 +12,11 @@
 
 		# 找OpenGL
 		find_package( OpenGL REQUIRED )
-
-
+		find_package(OpenMP)
+		if (OPENMP_FOUND)
+    		set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+		endif()
 		# 引入 3rd party 函式庫
 		include_directories(${CMAKE_SOURCE_DIR}/3rdparty)
 		include_directories(${CMAKE_SOURCE_DIR}/3rdparty/eigen3)

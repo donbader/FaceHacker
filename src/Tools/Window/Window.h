@@ -15,6 +15,7 @@ public:
 	bool shouldClose();
 	void setBackground(GLfloat r, GLfloat g, GLfloat b);
 	void render();
+	GLFWwindow* get(){return _ptr;}
 private:
 	GLFWwindow* _ptr;
 };

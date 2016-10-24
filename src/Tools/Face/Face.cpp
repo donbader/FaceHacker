@@ -77,7 +77,6 @@ void Face::objectOperation(FaceProgram* program, bool doTransform)
 	_DEBUG_TIME("genRenderingParams()");
 
 
-
 	if (GEN_MESH_EVERY_TIME) {
 		setMesh(genMesh_3());
 		if (hasMesh()) {
@@ -124,7 +123,7 @@ void Face::objectOperation(FaceProgram* program, bool doTransform)
 		}
 
 		if (!hasMesh()) {
-			setMesh(genMesh_2());
+			setMesh(genMesh_3());
 			_indexInProgram = program->addObj(_mesh);
 			_objInProgram = program->object(_indexInProgram);
 			_objInProgram->translate_Model(0, 0, 95);
@@ -158,16 +157,41 @@ void Face::setLandmarks(LandmarkCollection<cv::Vec2f> eos_landmarks)
 	else {
 		if (_current_landmarks.size() > 0) {
 			for (int i = 0; i < eos_landmarks.size(); ++i) {
-				_current_landmarks[i].coordinates[0] = interpolate(
-				        _current_landmarks[i].coordinates[0],
-				        eos_landmarks[i].coordinates[0],
-				        0.75
-				                                       );
-				_current_landmarks[i].coordinates[1] = interpolate(
-				        _current_landmarks[i].coordinates[1],
-				        eos_landmarks[i].coordinates[1],
-				        0.75
-				                                       );
+				if(((i>=0 && i<=16) || (i==21 || i==22)) && sqrt(pow( (_current_landmarks[i].coordinates[0]-eos_landmarks[i].coordinates[0]) , 2 )+ pow( (_current_landmarks[i].coordinates[1]-eos_landmarks[i].coordinates[1]) ,2 ) ) >10.0){
+					_current_landmarks[i] = eos_landmarks[i];
+				}else if(i>16 && sqrt(pow( (_current_landmarks[i].coordinates[0]-eos_landmarks[i].coordinates[0]) , 2 )+ pow( (_current_landmarks[i].coordinates[1]-eos_landmarks[i].coordinates[1]) ,2 ) ) >3.0){
+					_current_landmarks[i] = eos_landmarks[i];
+				}
+				// if((i>=0 && i<=16)|| i==21 || i==22){
+				// _current_landmarks[i].coordinates[0] = interpolate(
+				//         _current_landmarks[i].coordinates[0],
+				//         eos_landmarks[i].coordinates[0],
+				//         0.5
+				//                                        );
+				// _current_landmarks[i].coordinates[1] = interpolate(
+				//         _current_landmarks[i].coordinates[1],
+				//         eos_landmarks[i].coordinates[1],
+				//         0.5
+				//                                        );
+				// }
+				// else{
+				// 	_current_landmarks[i] = eos_landmarks[i];
+				// }
+				// if(i!=21 && i!=22){
+				// _current_landmarks[i].coordinates[0] = interpolate(
+				//         _current_landmarks[i].coordinates[0],
+				//         eos_landmarks[i].coordinates[0],
+				//         0.75
+				//                                        );
+				// _current_landmarks[i].coordinates[1] = interpolate(
+				//         _current_landmarks[i].coordinates[1],
+				//         eos_landmarks[i].coordinates[1],
+				//         0.75
+				//                                        );
+				// }
+				// else if(sqrt( pow( (_current_landmarks[i].coordinates[0]-eos_landmarks[i].coordinates[0]) , 2 )+ pow( (_current_landmarks[i].coordinates[1]-eos_landmarks[i].coordinates[1]) ,2 ) ) >50.0){
+				// 	_current_landmarks[i] = eos_landmarks[i];
+				// }
 			}
 		}
 		else {
@@ -186,13 +210,18 @@ void Face::setRenderingParams(fitting::RenderingParameters rendering_params)
 	_affine_from_ortho = get_3x4_affine_camera_matrix(_rendering_params, _frame.cols, _frame.rows);
 }
 void Face::setMesh(render::Mesh mesh) {
+	GLfloat x,y,z;
 	if (_mesh.vertices.size() > 0) {
 		//interpolation
-		for (int i = 0; i < mesh.vertices.size(); ++i) {
-			_mesh.vertices[i][0] = interpolate(_mesh.vertices[i][0], mesh.vertices[i][0], 0.6);
-			_mesh.vertices[i][1] = interpolate(_mesh.vertices[i][1], mesh.vertices[i][1], 0.6);
-			_mesh.vertices[i][2] = interpolate(_mesh.vertices[i][2], mesh.vertices[i][2], 0.6);
-		}
+		// for (int i = 0; i < mesh.vertices.size(); ++i) {
+		// 	// _mesh.vertices[i][0] = interpolate(_mesh.vertices[i][0], mesh.vertices[i][0], 0.6);
+		// 	// _mesh.vertices[i][1] = interpolate(_mesh.vertices[i][1], mesh.vertices[i][1], 0.6);
+		// 	// _mesh.vertices[i][2] = interpolate(_mesh.vertices[i][2], mesh.vertices[i][2], 0.6);
+		// 	x=_mesh.vertices[i][0]-mesh.vertices[i][0];
+		// 	y=_mesh.vertices[i][1]-mesh.vertices[i][1];
+		// 	z=_mesh.vertices[i][2]-mesh.vertices[i][2];
+		// }
+		_mesh = mesh;
 	}
 	else {
 		_mesh = mesh;
