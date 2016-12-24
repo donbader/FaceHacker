@@ -22,7 +22,14 @@ Face::Face(
 	_model_contour = fitting::ModelContour::load(contourFile);
 	_morphable_model = morphablemodel::load_model(morphableModelFile);
 	_blend_shapes = morphablemodel::load_blendshapes(BlendShapeFile);
-
+	// for (auto bs : _blend_shapes) {
+	// 	_DEBUG_MSG("bs.name: " << bs.name);
+	// 	for (int i = 0; i < bs.deformation.rows / 3; i += 3) {
+	// 		_DEBUG_MSG("at(" << i << ")[0]: " << bs.deformation.at<float>(i));
+	// 		_DEBUG_MSG("at(" << i << ")[1]: " << bs.deformation.at<float>(i + 1));
+	// 		_DEBUG_MSG("at(" << i << ")[2]: " << bs.deformation.at<float>(i + 2));
+	// 	}
+	// }
 
 }
 
@@ -79,12 +86,14 @@ void Face::objectOperation(FaceProgram* program, bool doTransform)
 
 
 	if (GEN_MESH_EVERY_TIME) {
-		setMesh(genMesh_3());
+		_PRINT_TIME("genMesh_3()",
+		            setMesh(genMesh_3());
+		           );
 		if (hasMesh()) {
 			_indexInProgram = program->addObj(_mesh);
 			_objInProgram = program->object(_indexInProgram);
 
-			if(doTransform){
+			if (doTransform) {
 				//move to anchor
 				GLfloat anchor_x = (_mesh.vertices[181][0] + _mesh.vertices[614][0]) / 2;
 				GLfloat anchor_y = (_mesh.vertices[181][1] + _mesh.vertices[614][1]) / 2;
@@ -94,7 +103,7 @@ void Face::objectOperation(FaceProgram* program, bool doTransform)
 
 
 				//scale
-				GLfloat ratio = genRatio_39_42() * (220.f / (320.f - _mesh.vertices[181][2]));
+				GLfloat ratio = genRatio(39, 42) * (220.f / (320.f - _mesh.vertices[181][2]));
 				_objInProgram->scale_Model(ratio, ratio, ratio);
 
 
@@ -102,11 +111,11 @@ void Face::objectOperation(FaceProgram* program, bool doTransform)
 				_objInProgram->rotate_Model(_head_angles[0], _head_angles[1], _head_angles[2]);
 
 				// //move to the right position
-				glm::vec3 delta = genDelta_39();
+				glm::vec3 delta = genDelta(39, 42);
 				_objInProgram->translate_Model(delta.x, delta.y, 100 );
 				program->camera().setPosition(delta.x, delta.y, 320);
 			}
-			else{
+			else {
 				_objInProgram->translate_Model(0, 0, 100);
 			}
 
@@ -157,18 +166,25 @@ void Face::setLandmarks(LandmarkCollection<cv::Vec2f> eos_landmarks)
 	}
 	else {
 		if (_current_landmarks.size() > 0) {
-			for (int i = 0; i < eos_landmarks.size(); ++i) {
-				_current_landmarks[i].coordinates[0] = interpolate(
-				        _current_landmarks[i].coordinates[0],
-				        eos_landmarks[i].coordinates[0],
-				        0.75
-				                                       );
-				_current_landmarks[i].coordinates[1] = interpolate(
-				        _current_landmarks[i].coordinates[1],
-				        eos_landmarks[i].coordinates[1],
-				        0.75
-				                                       );
+			for (int i = 0; i < _current_landmarks.size(); ++i) {
+				GLfloat c_x = _current_landmarks[i].coordinates[0];
+				GLfloat c_y = _current_landmarks[i].coordinates[1];
+				GLfloat x = eos_landmarks[i].coordinates[0];
+				GLfloat y = eos_landmarks[i].coordinates[1];
+				GLfloat delta = sqrt(pow(x - c_x, 2) + pow(y - c_y, 2));
+				switch (i) {
+				case 0 ... 16: case 39: case 42:
+					c_x = x;
+					c_y = y;
+				default:
+					c_x = x;
+					c_y = y;
+					break;
+				}
+				_current_landmarks[i].coordinates[0] = c_x;
+				_current_landmarks[i].coordinates[1] = c_y;
 			}
+
 		}
 		else {
 			_current_landmarks = eos_landmarks;
@@ -313,26 +329,28 @@ render::Mesh Face::genMesh_3() {
 		{
 			_blend_shapes[i].deformation.copyTo(blendshapes_as_basis.col(i));
 		}
-		std::vector<float> shape_coeffs, last_shape_coeffs;
-		std::vector<float> blendshape_coeffs, last_blendshape_coeffs;
-		shape_coeffs.resize(_morphable_model.get_shape_model().get_num_principal_components());
-		blendshape_coeffs.resize(_blend_shapes.size());
+		std::vector<float> last_shape_coeffs;
+		std::vector<float> last_blendshape_coeffs;
+		if (!_shape_coeffs.size())
+			_shape_coeffs.resize(_morphable_model.get_shape_model().get_num_principal_components());
+		if (!_blendshape_coeffs.size())
+			_blendshape_coeffs.resize(_blend_shapes.size());
 		cv::Mat combined_shape;
 
-		do{
-			last_shape_coeffs = shape_coeffs;
-			last_blendshape_coeffs = blendshape_coeffs;
+		do {
+			last_shape_coeffs = _shape_coeffs;
+			last_blendshape_coeffs = _blendshape_coeffs;
 
 			Mat mean_plus_blendshapes = _morphable_model.get_shape_model().get_mean() + blendshapes_as_basis * Mat(last_blendshape_coeffs);
-			shape_coeffs = fitting::fit_shape_to_landmarks_linear(_morphable_model, _affine_from_ortho, _image_points, _vertex_indices, mean_plus_blendshapes, 3.f);
+			_shape_coeffs = fitting::fit_shape_to_landmarks_linear(_morphable_model, _affine_from_ortho, _image_points, _vertex_indices, mean_plus_blendshapes, 3.f);
 
-			Mat pca_model_shape = _morphable_model.get_shape_model().draw_sample(shape_coeffs);
-			blendshape_coeffs = fitting::fit_blendshapes_to_landmarks_linear(_blend_shapes, pca_model_shape, _affine_from_ortho, _image_points, _vertex_indices, 0.f);
+			Mat pca_model_shape = _morphable_model.get_shape_model().draw_sample(_shape_coeffs);
+			_blendshape_coeffs = fitting::fit_blendshapes_to_landmarks_linear(_blend_shapes, pca_model_shape, _affine_from_ortho, _image_points, _vertex_indices, 0.f);
 
-			combined_shape = pca_model_shape + blendshapes_as_basis * Mat(blendshape_coeffs);
-		}while(std::abs(cv::norm(shape_coeffs) - cv::norm(last_shape_coeffs)) >= 0.5 || std::abs(cv::norm(blendshape_coeffs) - cv::norm(last_blendshape_coeffs)) >= 0.5);
-
+			combined_shape = pca_model_shape + blendshapes_as_basis * Mat(_blendshape_coeffs);
+		} while (std::abs(cv::norm(_shape_coeffs) - cv::norm(last_shape_coeffs)) >= 0.05 || std::abs(cv::norm(_blendshape_coeffs) - cv::norm(last_blendshape_coeffs)) >= 0.05);
 		// Obtain the full mesh with the estimated coefficients:
+		// _shape_coeffs = pca_shape_merging.add_and_merge(_shape_coeffs);
 		mesh = morphablemodel::detail::sample_to_mesh(combined_shape, _morphable_model.get_color_model().get_mean(), _morphable_model.get_shape_model().get_triangle_list(), _morphable_model.get_color_model().get_triangle_list(), _morphable_model.get_texture_coordinates());
 
 	}
@@ -341,53 +359,20 @@ render::Mesh Face::genMesh_3() {
 }
 
 
-render::Mesh Face::genMesh_4() {
-	render::Mesh mesh;
-	if (boxes_Detected() && landmarks_Detected()) {
-		// Estimate the shape coefficients by fitting the shape to the landmarks:
-		Mat blendshapes_as_basis(_blend_shapes[0].deformation.rows, _blend_shapes.size(), CV_32FC1); // assert blendshapes.size() > 0 and all of them have same number of rows, and 1 col
-		for (int i = 0; i < _blend_shapes.size(); ++i)
-		{
-			_blend_shapes[i].deformation.copyTo(blendshapes_as_basis.col(i));
-		}
-		std::vector<float> shape_coeffs, last_shape_coeffs;
-		std::vector<float> blendshape_coeffs, last_blendshape_coeffs;
-		shape_coeffs.resize(_morphable_model.get_shape_model().get_num_principal_components());
-		blendshape_coeffs.resize(_blend_shapes.size());
-		cv::Mat combined_shape;
 
-		do{
-			last_blendshape_coeffs = blendshape_coeffs;
-
-			Mat mean_plus_blendshapes = _morphable_model.get_shape_model().get_mean() + blendshapes_as_basis * Mat(last_blendshape_coeffs);
-
-			blendshape_coeffs = fitting::fit_blendshapes_to_landmarks_linear(_blend_shapes, mean_plus_blendshapes, _affine_from_ortho, _image_points, _vertex_indices, 0.f);
-
-			combined_shape = mean_plus_blendshapes + blendshapes_as_basis * Mat(blendshape_coeffs);
-		}while(std::abs(cv::norm(blendshape_coeffs) - cv::norm(last_blendshape_coeffs)) >= 0.5);
-
-
-		// Obtain the full mesh with the estimated coefficients:
-		mesh = morphablemodel::detail::sample_to_mesh(combined_shape, _morphable_model.get_color_model().get_mean(), _morphable_model.get_shape_model().get_triangle_list(), _morphable_model.get_color_model().get_triangle_list(), _morphable_model.get_texture_coordinates());
-
-	}
-
-	return mesh;
-}
-
-glm::vec3 Face::genDelta_39() {
+glm::vec3 Face::genDelta(int eye1, int eye2) {
 	glm::vec3 p;
-	GLfloat x = (_current_landmarks[39].coordinates[0] + _current_landmarks[42].coordinates[0]) / 2;
-	GLfloat y = (_current_landmarks[39].coordinates[1] + _current_landmarks[42].coordinates[1]) / 2;
+	GLfloat x = (_current_landmarks[eye1].coordinates[0] + _current_landmarks[eye2].coordinates[0]) / 2;
+	GLfloat y = (_current_landmarks[eye1].coordinates[1] + _current_landmarks[eye2].coordinates[1]) / 2;
 	p = glm::vec3(x * 640 / _frame.cols - 320, 180 - y * 360 / _frame.rows, 0);
 	return p;
 }
 
-GLfloat Face::genRatio_39_42() {
+GLfloat Face::genRatio(int eye1, int eye2) {
 	glm::vec3 p1, p2;
 	glm::vec4 p3;
-	p1 = glm::vec3(_current_landmarks[39].coordinates[0] * 640 / _frame.cols - 320, 180 - _current_landmarks[39].coordinates[1] * 360 / _frame.rows, 0);
-	p2 = glm::vec3(_current_landmarks[42].coordinates[0] * 640 / _frame.cols - 320, 180 - _current_landmarks[42].coordinates[1] * 360 / _frame.rows, 0);
+	p1 = glm::vec3(_current_landmarks[eye1].coordinates[0] * 640 / _frame.cols - 320, 180 - _current_landmarks[eye1].coordinates[1] * 360 / _frame.rows, 0);
+	p2 = glm::vec3(_current_landmarks[eye2].coordinates[0] * 640 / _frame.cols - 320, 180 - _current_landmarks[eye2].coordinates[1] * 360 / _frame.rows, 0);
 	p3 = glm::vec4(_mesh.vertices[614][0] - _mesh.vertices[181][0],
 	               _mesh.vertices[614][1] - _mesh.vertices[181][1],
 	               _mesh.vertices[614][2] - _mesh.vertices[181][2], 1);
@@ -466,17 +451,21 @@ cv::Vec2f Face::toWorldVec(cv::Vec2f matPos) {
 
 //painter
 void Face::drawObjects(cv::Scalar color) {
-	cv::Scalar tmp;
+	cv::Scalar _color;
 	for (int i = 0; i < _painting_objects.size(); ++i) {
-		if (i == 39 || i == 42) {
-			tmp = cv::Scalar(125, 120, 255);
+		switch (i) {
+		case 39: case 42:
+		case 0: case 16: case 8:
+			_color = cv::Scalar(125, 120, 255);
+			break;
+		default:
+			_color = color;
+			break;
 		}
-		else
-			tmp = color;
 		cv::rectangle(_frame,
 		              cvPoint(_painting_objects[i].x, _painting_objects[i].y ),
 		              cvPoint(_painting_objects[i].x + _painting_objects[i].width, _painting_objects[i].y  + _painting_objects[i].height),
-		              tmp);
+		              _color);
 	}
 }
 
@@ -540,3 +529,37 @@ LandmarkCollection<cv::Vec2f> Face::dlib_to_eos_landmarks(full_object_detection 
 	}
 	return eos_landmarks;
 }
+
+
+void Face::mosaics(dlib::rectangle drect) {
+	int msize = 25;
+	int left = (drect.left() < 0) ? 0 : drect.left();
+	int right = (drect.right() >= _frame.cols) ? _frame.cols - 1 : drect.right();
+	int top = (drect.top() < 0) ? 0 : drect.top();
+	int bottom = (drect.bottom() >= _frame.rows) ? _frame.rows - 1 : drect.bottom();
+
+	for (int i = left; i < right - msize; i += msize)
+		for (int j = top; j < bottom - msize; j += msize)
+		{
+			cv::Rect mosaic_r = cv::Rect(i, j, msize, msize);
+			cv::Mat mosaic = _frame( mosaic_r );
+			mosaic.setTo(mean(mosaic));
+		}
+}
+
+void Face::hentai() {
+	int left_x = _current_landmarks[36].coordinates[0] - 50;
+	left_x = left_x < 0 ? 0 : left_x;
+	int right_x = _current_landmarks[45].coordinates[0] + 50;
+	right_x = right_x >= _frame.cols ? _frame.cols-1 : right_x;
+	cv::Point l_t(left_x,_current_landmarks[36].coordinates[1]);
+	cv::Point r_b(right_x,_current_landmarks[45].coordinates[1]);
+	cv::line(_frame,
+			l_t,
+			r_b,
+	        cv::Scalar(0, 0, 0),
+	        60,
+	        4);
+}
+
+

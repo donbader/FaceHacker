@@ -36,8 +36,10 @@ int FaceProgram::addObj(Mesh mesh){
     vao->setBuffer(vao->VBO_INDICE, idc);
 
 
-    cv::Mat white(1,1,CV_8UC3,cv::Scalar(255,255,255));
-    vao->setTexture(white);
+    // cv::Mat white(1,1,CV_8UC3,cv::Scalar(0,0,0));
+    // vao->setTexture(white);
+    cv::Mat texture = cv::imread("dataset/test.png");
+    vao->setTexture(texture);
 
     _VAOs.push_back(vao);
 

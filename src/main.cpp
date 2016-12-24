@@ -72,10 +72,12 @@ int main( int argc, char ** argv )
 
     //game loop
     GLint k=100;
+    face_program.setUniformFloat("lightPower", 100000);
     do {
         if (!cap.read(frame))break;
-
-
+        // cv::Mat gray, hihi;
+        // cv::cvtColor( frame, gray, cv::COLOR_BGR2GRAY );
+        // cv::resize(frame,frame,cv::Size(60,60));
         //face operation
         // if(argc == 3){
         //     face.setCoef(std::stoi(argv[1]));
@@ -83,13 +85,15 @@ int main( int argc, char ** argv )
         // }
 
         _DEBUG_TIMER_INIT();
-        _PRINT_TIME("face.detect()",
+        // _PRINT_TIME("face.detect()",
         face.detect(frame, false, true);
-        );
+        // );
+        // face.mosaics(face.enclosing_box());
+        // if(face.landmarks_Detected())face.hentai();
 
-        _PRINT_TIME("face.objectOperation()",
+        // _PRINT_TIME("face.objectOperation()",
         face.objectOperation(&face_program, true);
-        );
+        // );
         //set camera frame
         obj_program.object(screen_index)->setTexture(frame);
         obj_program.render();

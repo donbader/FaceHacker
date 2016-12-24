@@ -94,6 +94,9 @@ public:
 	void detect(cv::Mat newFrame, bool draw_rects=false, bool draw_landmarks=false);
 	void objectOperation(FaceProgram* program, bool doTransform = true);
 
+	// AR
+	void mosaics(dlib::rectangle);
+	void hentai();
 	//converter
 
 	static cv::Rect toCvRect(dlib::rectangle drect);
@@ -104,10 +107,14 @@ public:
 
 
 	//getter
-	int objectIndex(cv::Mat frame);
+	// int objectIndex(cv::Mat frame);
 	render::Mesh mesh() {return _mesh;}
 	cv::Mat frame() {return _frame;}
 	cv::Mat isomap() {return _isomap;}
+	GLSLVertexArrayObject* object(){return _objInProgram;}
+	dlib::rectangle enclosing_box(){
+		return (_enclosing_boxes.size()) ? _enclosing_boxes[0] : dlib::rectangle(0,0,0,0);
+	}
 	bool boxes_Detected() {return ((_enclosing_boxes.size() == 0) ? false : true);}
 	bool landmarks_Detected() {return ((_current_landmarks.size() == 0) ? false : true);}
 	bool hasMesh(){return ((_mesh.vertices.size() == 0 ) ? false : true);}
@@ -131,9 +138,8 @@ public:
 	render::Mesh genMesh_1();
 	render::Mesh genMesh_2();
 	render::Mesh genMesh_3();
-	render::Mesh genMesh_4();
-	glm::vec3 genDelta_39();
-	GLfloat genRatio_39_42();
+	glm::vec3 genDelta(int eye1,int eye2);
+	GLfloat genRatio(int eye1, int eye2);
 	cv::Mat to_matrix(const std::vector<eos::morphablemodel::Blendshape>& blendshapes);
 	cv::Mat genIsomap();
 
@@ -168,6 +174,9 @@ private:
 	cv::Mat _affine_from_ortho;
 	morphablemodel::MorphableModel _morphable_model;
 	std::vector<morphablemodel::Blendshape> _blend_shapes;
+
+	std::vector<float> _shape_coeffs;
+	std::vector<float> _blendshape_coeffs;
 	PcaCoefficientMerging _pca_shape_merging;
 	render::Mesh _mesh;
 
@@ -190,4 +199,3 @@ private:
 	GLuint _coef = 0;
 	GLfloat _rot = 0.f;
 };
-
