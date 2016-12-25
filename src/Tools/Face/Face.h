@@ -27,8 +27,6 @@
 
 
 #define FRAME_DETECT_FACTOR 2
-#define GEN_MESH_EVERY_TIME true
-#define DRAW_FACE_BY_LINE false
 #define interpolate(a, b, mu) ((a)*(1-(mu)) + (b)*(mu))
 
 
@@ -91,8 +89,8 @@ public:
 	~Face();
 
 	//
-	void detect(cv::Mat newFrame, bool draw_rects=false, bool draw_landmarks=false);
-	void objectOperation(FaceProgram* program, bool doTransform = true);
+	void detect(cv::Mat newFrame, bool draw_rects=false, bool draw_landmarks=false,bool byline=true);
+	void objectOperation(FaceProgram* program,cv::Mat texture, bool doTransform = true);
 
 	// AR
 	void mosaics(dlib::rectangle);
@@ -195,7 +193,7 @@ private:
 
 	//program
 	int _indexInProgram = -1;
-	GLSLVertexArrayObject* _objInProgram;
+	GLSLVertexArrayObject* _objInProgram=NULL;
 	GLuint _coef = 0;
 	GLfloat _rot = 0.f;
 };

@@ -39,7 +39,7 @@ Face::~Face()
 }
 
 //
-void Face::detect(cv::Mat newFrame, bool draw_enclosing_boxes, bool draw_landmarks)
+void Face::detect(cv::Mat newFrame, bool draw_enclosing_boxes, bool draw_landmarks, bool byline)
 {
 	_frame = newFrame;
 
@@ -69,14 +69,14 @@ void Face::detect(cv::Mat newFrame, bool draw_enclosing_boxes, bool draw_landmar
 			_painting_objects.push_back( {(int)(_current_landmarks[i].coordinates[0]), (int)(_current_landmarks[i].coordinates[1]), 2, 2} );
 		}
 
-		if (DRAW_FACE_BY_LINE)
+		if (byline)
 			drawLandmarks(cv::Scalar(255, 255, 0));
 		else
 			drawObjects(cv::Scalar(255, 255, 0));
 	}
 }
 
-void Face::objectOperation(FaceProgram* program, bool doTransform)
+void Face::objectOperation(FaceProgram* program,cv::Mat texture, bool doTransform)
 {
 	_DEBUG_MSG("-----------------------------------------------------------------");
 	_DEBUG_TIMER_INIT();
@@ -84,68 +84,44 @@ void Face::objectOperation(FaceProgram* program, bool doTransform)
 	_DEBUG_TIME("genRenderingParams()");
 
 
+	_PRINT_TIME("genMesh_3()",
+	            setMesh(genMesh_3());
+	           );
+	if (hasMesh()) {
+		_indexInProgram = program->addObj(_mesh);
+		_objInProgram = program->object(_indexInProgram);
 
-	if (GEN_MESH_EVERY_TIME) {
-		_PRINT_TIME("genMesh_3()",
-		            setMesh(genMesh_3());
-		           );
-		if (hasMesh()) {
-			_indexInProgram = program->addObj(_mesh);
-			_objInProgram = program->object(_indexInProgram);
-
-			if (doTransform) {
-				//move to anchor
-				GLfloat anchor_x = (_mesh.vertices[181][0] + _mesh.vertices[614][0]) / 2;
-				GLfloat anchor_y = (_mesh.vertices[181][1] + _mesh.vertices[614][1]) / 2;
-				GLfloat anchor_z = (_mesh.vertices[181][2] + _mesh.vertices[614][2]) / 2;
-				_objInProgram->translate_Model(-anchor_x, -anchor_y, -anchor_z);
+		if (doTransform) {
+			//move to anchor
+			GLfloat anchor_x = (_mesh.vertices[181][0] + _mesh.vertices[614][0]) / 2;
+			GLfloat anchor_y = (_mesh.vertices[181][1] + _mesh.vertices[614][1]) / 2;
+			GLfloat anchor_z = (_mesh.vertices[181][2] + _mesh.vertices[614][2]) / 2;
+			_objInProgram->translate_Model(-anchor_x, -anchor_y, -anchor_z);
 
 
 
-				//scale
-				GLfloat ratio = genRatio(39, 42) * (220.f / (320.f - _mesh.vertices[181][2]));
-				_objInProgram->scale_Model(ratio, ratio, ratio);
+			//scale
+			GLfloat ratio = genRatio(39, 42) * (220.f / (320.f - _mesh.vertices[181][2]));
+			_objInProgram->scale_Model(ratio, ratio, ratio);
 
 
-				// rotate
-				_objInProgram->rotate_Model(_head_angles[0], _head_angles[1], _head_angles[2]);
+			// rotate
+			_objInProgram->rotate_Model(_head_angles[0], _head_angles[1], _head_angles[2]);
 
-				// //move to the right position
-				glm::vec3 delta = genDelta(39, 42);
-				_objInProgram->translate_Model(delta.x, delta.y, 100 );
-				program->camera().setPosition(delta.x, delta.y, 320);
-			}
-			else {
-				_objInProgram->translate_Model(0, 0, 100);
-			}
-
-			// _objInProgram->setTexture(genIsomap());
-			//render
-			program->render();
-			program->deleteObj(_indexInProgram);
+			// //move to the right position
+			glm::vec3 delta = genDelta(39, 42);
+			_objInProgram->translate_Model(delta.x, delta.y, 100 );
+			program->camera().setPosition(delta.x, delta.y, 320);
 		}
-	}
-	else {
-		if (!landmarks_Detected()) {
-			program->deleteObj(_indexInProgram);
-			_indexInProgram = -1;
-			return;
+		else {
+			_objInProgram->translate_Model(0, 0, 100);
 		}
 
-		if (!hasMesh()) {
-			setMesh(genMesh_2());
-			_indexInProgram = program->addObj(_mesh);
-			_objInProgram = program->object(_indexInProgram);
-			_objInProgram->translate_Model(0, 0, 95);
-		}
-
-		//rotate
-		// _objInProgram->rotate_Model(_angles_delta[0],1,0,0);
-		// _objInProgram->rotate_Model(_angles_delta[1],0,1,0);
-		// _objInProgram->rotate_Model(_angles_delta[2],0,0,1);
-
+		// _objInProgram->setTexture(genIsomap());
+		_objInProgram->setTexture(texture);
 		//render
 		program->render();
+		program->deleteObj(_indexInProgram);
 	}
 	//set deformation
 }

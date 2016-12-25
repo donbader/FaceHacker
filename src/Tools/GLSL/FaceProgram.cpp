@@ -38,8 +38,8 @@ int FaceProgram::addObj(Mesh mesh){
 
     // cv::Mat white(1,1,CV_8UC3,cv::Scalar(0,0,0));
     // vao->setTexture(white);
-    cv::Mat texture = cv::imread("dataset/test.png");
-    vao->setTexture(texture);
+    // cv::Mat texture = cv::imread("dataset/test.png");
+    // vao->setTexture(texture);
 
     _VAOs.push_back(vao);
 

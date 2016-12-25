@@ -92,8 +92,11 @@ int main( int argc, char ** argv )
         // if(face.landmarks_Detected())face.hentai();
 
         // _PRINT_TIME("face.objectOperation()",
-        face.objectOperation(&face_program, true);
+        // cv::Mat white = cv::Mat(1,1,CV_8UC3,cv::Scalar(255, 255, 255));
+        face.objectOperation(&face_program, cv::imread("dataset/test.png") , true);
         // );
+        // if(face.hasMesh())
+            // face.object()->setTexture();
         //set camera frame
         obj_program.object(screen_index)->setTexture(frame);
         obj_program.render();
