@@ -534,7 +534,7 @@ void Face::hentai() {
 			l_t,
 			r_b,
 	        cv::Scalar(0, 0, 0),
-	        60,
+	        30,
 	        4);
 }
 

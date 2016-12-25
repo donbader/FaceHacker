@@ -1,7 +1,7 @@
 ##### 設定環境
 	cmake_minimum_required(VERSION 3.2)
 	project(FACEHACKER)
-	add_subdirectory(tools)
+	add_subdirectory(Tools)
 
 ##### 設定 flags
 	set(CMAKE_CXX_FLAGS "-std=c++14 -g")
@@ -13,7 +13,12 @@
 		# 找OpenGL
 		find_package( OpenGL REQUIRED )
 
-
+		# 找gtkmm
+		find_package(PkgConfig REQUIRED )
+		pkg_check_modules(GTKMM gtkmm-3.0)
+		link_directories(${GTKMM_LIBRARY_DIRS}  )
+		include_directories(${GTKMM_INCLUDE_DIRS}  )
+		
 		# 引入 3rd party 函式庫
 		include_directories(${CMAKE_SOURCE_DIR}/3rdparty)
 		include_directories(${CMAKE_SOURCE_DIR}/3rdparty/eigen3)
@@ -26,6 +31,7 @@
 	# 設定library路徑
 	set(MAIN_LIBS
 		${OPENGL_gl_LIBRARY}
+		${GTKMM_LIBRARIES}
 		Tools)
 
 

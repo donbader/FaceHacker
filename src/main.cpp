@@ -2,12 +2,19 @@
 using namespace glm;
 
 
+void gui(ControlMenu & Controlwindow);
+
 int main( int argc, char ** argv )
 {
     Window window(960, 540, "Face Hacker");
     window.setBackground(0.5,0.5,0.5);
 
     // get
+    Gtk::Main kit(argc, argv);
+    ControlMenu Controlwindow;
+
+   //Shows the window and returns when it is closed.
+    // Gtk::Main::run(Controlwindow);
 
 
     GLSLProgram obj_program("dataset/screen.vs","dataset/screen.fs");
@@ -73,8 +80,14 @@ int main( int argc, char ** argv )
     //game loop
     GLint k=100;
     face_program.setUniformFloat("lightPower", 100000);
+
+
+    thread mThread(gui,std::ref(Controlwindow));
+
     do {
         if (!cap.read(frame))break;
+
+
         // cv::Mat gray, hihi;
         // cv::cvtColor( frame, gray, cv::COLOR_BGR2GRAY );
         // cv::resize(frame,frame,cv::Size(60,60));
@@ -86,20 +99,56 @@ int main( int argc, char ** argv )
 
         _DEBUG_TIMER_INIT();
         // _PRINT_TIME("face.detect()",
-        face.detect(frame, false, true);
+        face.detect(frame, false, Controlwindow.Landmark_Mode == 0 ? false : true , Controlwindow.Landmark_Mode == 1 ? false : true);
         // );
+
+
         // face.mosaics(face.enclosing_box());
         // if(face.landmarks_Detected())face.hentai();
 
         // _PRINT_TIME("face.objectOperation()",
-        // cv::Mat white = cv::Mat(1,1,CV_8UC3,cv::Scalar(255, 255, 255));
-        face.objectOperation(&face_program, cv::imread("dataset/test.png") , true);
+        
+        switch(Controlwindow.AR_Mode){
+            case 1:
+                face.objectOperation(&face_program, cv::imread("dataset/test.png") , true);
+                break;
+            case 2:
+                face.objectOperation(&face_program, cv::imread("dataset/無臉男.png") , true);
+                break;
+            case 3:
+                face.mosaics(face.enclosing_box());
+                break;
+            case 4:
+                if(face.landmarks_Detected())face.hentai();
+                break;
+        }
+
+        switch(Controlwindow.Mesh_Mode){
+            case 1:
+                face_program.setUniformInt("mode", 0);
+                face_program.setRenderMode(GL_POINTS);
+                face.objectOperation(&face_program, cv::Mat(1, 1, CV_8UC3, cv::Scalar( Controlwindow.getColor().b,  Controlwindow.getColor().g,  Controlwindow.getColor().r)) , true);
+                break;
+            case 2:
+                face_program.setUniformInt("mode",2);
+                face_program.setRenderMode(GL_LINES);
+                face.objectOperation(&face_program, cv::Mat(1, 1, CV_8UC3, cv::Scalar( Controlwindow.getColor().b,  Controlwindow.getColor().g,  Controlwindow.getColor().r)) , true);
+                break;
+            case 3:
+                face_program.setUniformInt("mode",2);
+                face_program.setRenderMode(GL_TRIANGLES);
+                face.objectOperation(&face_program, cv::Mat(1, 1, CV_8UC3, cv::Scalar( Controlwindow.getColor().b,  Controlwindow.getColor().g,  Controlwindow.getColor().r)) , true);
+                break;
+        }
+
         // );
         // if(face.hasMesh())
             // face.object()->setTexture();
         //set camera frame
         obj_program.object(screen_index)->setTexture(frame);
         obj_program.render();
+
+
 
 
         window.render();
@@ -110,3 +159,12 @@ int main( int argc, char ** argv )
     return 0;
 }
 
+void gui(ControlMenu & Controlwindow){
+    // get
+    Controlwindow.show();
+    while(1){
+    gtk_main_iteration();   
+   }
+   //Shows the window and returns when it is closed.
+    // Gtk::Main::run(Controlwindow);
+}
