@@ -1,0 +1,20 @@
+*{
+	font-size: 15px;
+}
+.button {
+	color: 	#3A0088;
+	border: none;
+	font-size:  20px;
+}
+
+#AR_CSS {
+	color: #FFFFFF;
+	background: #AAAAAA;
+	border: none;
+	border-radius: 0px;
+	font-size:  15px;
+}
+#AR_CSS:hover {
+	color: #AAAAAA;
+	background: #FFFFFF;
+}
