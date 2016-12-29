@@ -61,7 +61,7 @@ void Window::setBackground(GLfloat r, GLfloat g, GLfloat b){
 
 void Window::render(){
     glfwSwapBuffers(_ptr);
-    glfwPollEvents();
+    // glfwPollEvents();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 }
