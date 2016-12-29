@@ -82,7 +82,6 @@ int main(int argc, char ** argv)
     GLint k = 100;
     face_program.setUniformFloat("lightPower", 100000);
 
-
     // thread mthread(runMenu);
     do {
         if (!cap.read(frame))break;
@@ -108,9 +107,12 @@ int main(int argc, char ** argv)
                 face.objectOperation(&face_program, cv::imread("dataset/無臉男.png") , true);
                 break;
             case 3:
-                face.mosaics(face.enclosing_box());
+                face.objectOperation(&face_program, cv::imread("dataset/spider.png") , true);
                 break;
             case 4:
+                face.mosaics(face.enclosing_box());
+                break;
+            case 5:
                 if(face.landmarks_Detected())face.hentai();
                 break;
         }
