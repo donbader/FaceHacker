@@ -1,9 +1,9 @@
 # FaceHacker
 
-## Our original goal:
+## Our original goal
 [face2face](https://www.youtube.com/watch?v=ohmajJTcpNk)
 
-## 3rdparty:
+## 3rdparty
 [dlib](http://dlib.net/)
 <br>
 [eos](https://github.com/patrikhuber/eos)
