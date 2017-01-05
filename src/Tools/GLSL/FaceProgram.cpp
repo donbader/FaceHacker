@@ -7,8 +7,8 @@ FaceProgram::FaceProgram(
     )
     : GLSLProgram(vsFile,fsFile)
 {
-    bone_index_array = genBoneIndexArray(3448);
-    bone_weights = genBoneWeights(3448);
+    // bone_index_array = genBoneIndexArray(3448);
+    // bone_weights = genBoneWeights(3448);
 }
 
 
@@ -16,8 +16,8 @@ int FaceProgram::addObj(Mesh mesh){
     GLSLVertexArrayObject* vao = new GLSLVertexArrayObject();
     GLSLVertexBufferObject* pos = new GLSLVertexBufferObject(mesh.vertices, GL_ARRAY_BUFFER);
     GLSLVertexBufferObject* tcd = new GLSLVertexBufferObject(mesh.texcoords, GL_ARRAY_BUFFER);
-    GLSLVertexBufferObject* bon = new GLSLVertexBufferObject(bone_index_array ,GL_ARRAY_BUFFER);
-    GLSLVertexBufferObject* wei = new GLSLVertexBufferObject(bone_weights, GL_ARRAY_BUFFER);
+    // GLSLVertexBufferObject* bon = new GLSLVertexBufferObject(bone_index_array ,GL_ARRAY_BUFFER);
+    // GLSLVertexBufferObject* wei = new GLSLVertexBufferObject(bone_weights, GL_ARRAY_BUFFER);
     GLSLVertexBufferObject* idc = new GLSLVertexBufferObject(mesh.tvi, GL_ELEMENT_ARRAY_BUFFER);
     GLfloat* normals = computeVertexNormals(    pos->data(),
                                                 pos->size(),
@@ -31,8 +31,8 @@ int FaceProgram::addObj(Mesh mesh){
     vao->setBuffer(vao->VBO_POS, pos);
     vao->setBuffer(vao->VBO_TEXCOORDS, tcd);
     vao->setBuffer(vao->VBO_NORMALS, nmls);
-    vao->setBuffer(vao->VBO_BONE_INDEX, bon);
-    vao->setBuffer(vao->VBO_BONE_WEIGHT, wei);
+    // vao->setBuffer(vao->VBO_BONE_INDEX, bon);
+    // vao->setBuffer(vao->VBO_BONE_WEIGHT, wei);
     vao->setBuffer(vao->VBO_INDICE, idc);
 
 

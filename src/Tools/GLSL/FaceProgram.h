@@ -23,7 +23,7 @@ public:
 	vector<cv::Vec2f> genBoneIndexArray(int meshSize);
 	vector<cv::Vec2f> genBoneWeights(int meshSize);
 private:
-	vector<cv::Vec2f> bone_index_array;
-	vector<cv::Vec2f> bone_weights;
+	// vector<cv::Vec2f> bone_index_array;
+	// vector<cv::Vec2f> bone_weights;
 	int render_mode = GL_TRIANGLES;
 };

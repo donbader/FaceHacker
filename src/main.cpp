@@ -103,7 +103,7 @@ int main(int argc, char ** argv)
         // _PRINT_TIME("face.objectOperation()",
         switch(Controlwindow.AR_Mode){
             case 1:
-                face.objectOperation(&face_program, cv::imread("dataset/test.png") , true);
+                face.objectOperation(&face_program, cv::imread("dataset/v.png") , true);
                 break;
             case 2:
                 face.objectOperation(&face_program, cv::imread("dataset/無臉男.png") , true);
