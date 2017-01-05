@@ -25,7 +25,7 @@ uniform float lightAlpha = 50.f;
 //Material factors
 uniform vec3 materialDiffuseFactor = vec3(0.3, 0.3, 0.3);
 uniform vec3 materialAmbientFactor = vec3(0.1, 0.1, 0.1);
-uniform vec3 materialSpecularFactor = vec3(0.3, 0.3, 0.3);
+uniform vec3 materialSpecularFactor = vec3(0.1, 0.1, 0.1);
 
 
 // Mode Control

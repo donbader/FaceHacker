@@ -87,12 +87,13 @@ int main(int argc, char ** argv)
     do {
         if (!cap.read(frame))break;
         gtk_main_iteration_do(false);
-
+        cv::Mat dst;
+        cv::flip(frame, dst, 1);
 
         // _DEBUG_TIMER_INIT();
         // _PRINT_TIME("face.detect()",
         // face.detect(frame, false, 1 == 0 ? false : true , 1 == 1 ? false : true);
-        face.detect(frame, false, Controlwindow.Landmark_Mode == 0 ? false : true , Controlwindow.Landmark_Mode == 1 ? false : true);
+        face.detect(dst, false, Controlwindow.Landmark_Mode == 0 ? false : true , Controlwindow.Landmark_Mode == 1 ? false : true);
         // );
 
 
@@ -137,7 +138,7 @@ int main(int argc, char ** argv)
         // if(face.hasMesh())
         // face.object()->setTexture();
         //set camera frame
-        obj_program.object(screen_index)->setTexture(frame);
+        obj_program.object(screen_index)->setTexture(dst);
         obj_program.render();
 
 

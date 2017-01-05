@@ -26,7 +26,7 @@
 
 
 
-#define FRAME_DETECT_FACTOR 2
+#define FRAME_DETECT_FACTOR 3
 #define interpolate(a, b, mu) ((a)*(1-(mu)) + (b)*(mu))
 
 
