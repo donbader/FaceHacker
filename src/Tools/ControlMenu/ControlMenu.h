@@ -35,6 +35,7 @@ class ControlMenu : public Gtk::Window
 		void on_button_AR2_set();
 		void on_button_AR3_set();
 		void on_button_AR4_set();
+		void on_button_AR5_set();
 		void on_button_2D_Point_set();
 		void on_button_2D_Point_set2();
 		void on_button_3D_Point_set();
@@ -91,6 +92,7 @@ class ControlMenu : public Gtk::Window
 		Gtk::Button m_Button_AR2;
 		Gtk::Button m_Button_AR3;
 		Gtk::Button m_Button_AR4;
+		Gtk::Button m_Button_AR5;
 		//Color
 		// Gdk::Color m_Color_2D;
 		Gdk::Color m_Color_3D;

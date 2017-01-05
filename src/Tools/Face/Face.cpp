@@ -507,20 +507,24 @@ LandmarkCollection<cv::Vec2f> Face::dlib_to_eos_landmarks(full_object_detection 
 }
 
 
-void Face::mosaics(dlib::rectangle drect) {
+void Face::mosaics(std::vector<dlib::rectangle> drect) {
 	int msize = 25;
-	int left = (drect.left() < 0) ? 0 : drect.left();
-	int right = (drect.right() >= _frame.cols) ? _frame.cols - 1 : drect.right();
-	int top = (drect.top() < 0) ? 0 : drect.top();
-	int bottom = (drect.bottom() >= _frame.rows) ? _frame.rows - 1 : drect.bottom();
 
-	for (int i = left; i < right - msize; i += msize)
-		for (int j = top; j < bottom - msize; j += msize)
-		{
-			cv::Rect mosaic_r = cv::Rect(i, j, msize, msize);
-			cv::Mat mosaic = _frame( mosaic_r );
-			mosaic.setTo(mean(mosaic));
+	for(int j=0;j<drect.size();j++){
+		int left = (drect[j].left() < 0) ? 0 : drect[j].left();
+		int right = (drect[j].right() >= _frame.cols) ? _frame.cols - 1 : drect[j].right();
+		int top = (drect[j].top() < 0) ? 0 : drect[j].top();
+		int bottom = (drect[j].bottom() >= _frame.rows) ? _frame.rows - 1 : drect[j].bottom();
+
+		for (int i = left; i < right - msize; i += msize){
+			for (int j = top; j < bottom - msize; j += msize)
+			{
+				cv::Rect mosaic_r = cv::Rect(i, j, msize, msize);
+				cv::Mat mosaic = _frame( mosaic_r );
+				mosaic.setTo(mean(mosaic));
+			}
 		}
+	}
 }
 
 void Face::hentai() {

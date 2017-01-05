@@ -93,7 +93,7 @@ public:
 	void objectOperation(FaceProgram* program,cv::Mat texture, bool doTransform = true);
 
 	// AR
-	void mosaics(dlib::rectangle);
+	void mosaics(std::vector<dlib::rectangle>);
 	void hentai();
 	//converter
 
@@ -110,8 +110,9 @@ public:
 	cv::Mat frame() {return _frame;}
 	cv::Mat isomap() {return _isomap;}
 	GLSLVertexArrayObject* object(){return _objInProgram;}
-	dlib::rectangle enclosing_box(){
-		return (_enclosing_boxes.size()) ? _enclosing_boxes[0] : dlib::rectangle(0,0,0,0);
+	std::vector<dlib::rectangle> enclosing_box(){
+		// return (_enclosing_boxes.size()) ? _enclosing_boxes : std::vector<dlib::rectangle> tmp;
+		return	 _enclosing_boxes;
 	}
 	bool boxes_Detected() {return ((_enclosing_boxes.size() == 0) ? false : true);}
 	bool landmarks_Detected() {return ((_current_landmarks.size() == 0) ? false : true);}

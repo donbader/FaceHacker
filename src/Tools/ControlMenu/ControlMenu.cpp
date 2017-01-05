@@ -34,9 +34,9 @@ ControlMenu::ControlMenu()
 		//ARButton
 		m_Button_AR1("V怪客"),
 		m_Button_AR2("無臉男"),
-		m_Button_AR3("馬賽克"),
-		m_Button_AR4("Hantai"),
-
+		m_Button_AR3("Spiderman"),
+		m_Button_AR4("馬賽克"),
+		m_Button_AR5("Hantai"),
 		//Node
 		Landmark_Mode(0),
 		Mesh_Mode(0),
@@ -79,6 +79,7 @@ ControlMenu::ControlMenu()
 				m_VBox_AR.pack_start(m_Button_AR2, Gtk::PACK_SHRINK);
 				m_VBox_AR.pack_start(m_Button_AR3, Gtk::PACK_SHRINK);
 				m_VBox_AR.pack_start(m_Button_AR4, Gtk::PACK_SHRINK);
+				m_VBox_AR.pack_start(m_Button_AR5, Gtk::PACK_SHRINK);
 			//TotalButton setting
 			m_Button_2D.signal_clicked().connect(sigc::mem_fun(*this,
 				&ControlMenu::on_button_2D_Menu));
@@ -139,6 +140,7 @@ ControlMenu::ControlMenu()
 			m_Button_AR2.set_name("AR_CSS");
 			m_Button_AR3.set_name("AR_CSS");
 			m_Button_AR4.set_name("AR_CSS");
+			m_Button_AR5.set_name("AR_CSS");
 			m_Button_AR1.signal_clicked().connect(sigc::mem_fun(*this,
 				&ControlMenu::on_button_AR1_set));
 			m_Button_AR2.signal_clicked().connect(sigc::mem_fun(*this,
@@ -147,7 +149,8 @@ ControlMenu::ControlMenu()
 				&ControlMenu::on_button_AR3_set));
 			m_Button_AR4.signal_clicked().connect(sigc::mem_fun(*this,
 				&ControlMenu::on_button_AR4_set));
-
+			m_Button_AR5.signal_clicked().connect(sigc::mem_fun(*this,
+				&ControlMenu::on_button_AR5_set));
 
 			//load css
 			Glib::RefPtr<Gtk::CssProvider> cssProvider = Gtk::CssProvider::create();
@@ -229,9 +232,11 @@ void ControlMenu::on_button_AR_Menu(){
 		m_VBox_AR.pack_start(m_Button_AR2, Gtk::PACK_SHRINK);
 		m_VBox_AR.pack_start(m_Button_AR3, Gtk::PACK_SHRINK);
 		m_VBox_AR.pack_start(m_Button_AR4, Gtk::PACK_SHRINK);
+		m_VBox_AR.pack_start(m_Button_AR5, Gtk::PACK_SHRINK);
 	}
 	else{
 		m_Button_AR.set_label("+   AR");
+		m_VBox_AR.remove(m_Button_AR5);
 		m_VBox_AR.remove(m_Button_AR4);
 		m_VBox_AR.remove(m_Button_AR3);
 		m_VBox_AR.remove(m_Button_AR2);
@@ -340,6 +345,18 @@ void ControlMenu::on_button_AR4_set(){
       		m_Button_3D_Line.set_sensitive(0);
       	}
 	std::cout<<"AR4"<<std::endl;
+}
+
+void ControlMenu::on_button_AR5_set(){
+	Mesh_Mode=0;
+	AR_Mode=5;
+	if(m_Button_3D_Mesh.get_active()){
+		m_Button_3D_Mesh.set_active(0);
+      		m_Button_3D_Point.set_sensitive(0);
+      		m_Button_3D_Triangle.set_sensitive(0);
+      		m_Button_3D_Line.set_sensitive(0);
+      	}
+	std::cout<<"AR5"<<std::endl;
 }
 
 void ControlMenu::on_button_2D_Point_set(){
