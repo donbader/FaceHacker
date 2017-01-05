@@ -528,9 +528,12 @@ void Face::mosaics(std::vector<dlib::rectangle> drect) {
 }
 
 void Face::hentai() {
-	int left_x = _current_landmarks[36].coordinates[0] - 50;
+	float left_x = _current_landmarks[36].coordinates[0];
+	float right_x = _current_landmarks[45].coordinates[0];
+	float delta = (right_x - left_x);
+	left_x -= delta/6;
+	right_x += delta/6;
 	left_x = left_x < 0 ? 0 : left_x;
-	int right_x = _current_landmarks[45].coordinates[0] + 50;
 	right_x = right_x >= _frame.cols ? _frame.cols-1 : right_x;
 	cv::Point l_t(left_x,_current_landmarks[36].coordinates[1]);
 	cv::Point r_b(right_x,_current_landmarks[45].coordinates[1]);
@@ -538,7 +541,7 @@ void Face::hentai() {
 			l_t,
 			r_b,
 	        cv::Scalar(0, 0, 0),
-	        (float)(right_x-left_x)/11,
+	        delta/11,
 	        4);
 }
 

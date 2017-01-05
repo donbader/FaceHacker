@@ -69,7 +69,7 @@ void main()
 			  + (materialDiffuseColor * lightColor * lightPower * cosTheta
 			  + materialSpecularColor * lightColor * lightPower * pow(cosPsi, lightAlpha)) / (distance * distance);
 	   	if(mode == 2){
-		color *= texture(uSampler, UV);
+			color *= texture(uSampler, UV);
   		}
 
 	}

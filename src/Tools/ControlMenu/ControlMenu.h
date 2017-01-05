@@ -18,6 +18,8 @@ class ControlMenu : public Gtk::Window
 		virtual ~ControlMenu();
 
 		rgb_color_t getColor();
+		float getDiffuseFactor();
+		float getSpecularFactor();
 		//Node
 		int Landmark_Mode;
 		int Mesh_Mode;
@@ -44,12 +46,12 @@ class ControlMenu : public Gtk::Window
 		//Child widgets:
 		Gtk::Box m_VBox_Top, m_VBox_2D, m_VBox_3D, m_VBox_2D_Mode, m_VBox_3D_Mode, m_VBox_AR;
 
-		Gtk::Box m_HBox_2D_Detect, m_HBox_3D_Mesh;
+		Gtk::Box m_HBox_2D_Detect, m_HBox_3D_Mesh, m_HBox_Scroll, m_HBox_Scroll2;
 
-		Glib::RefPtr<Gtk::Adjustment> m_adjustment, m_adjustment_digits, m_adjustment_pagesize;
+		Glib::RefPtr<Gtk::Adjustment> m_adjustment, m_adjustment2;
 
 		Gtk::Scale m_VScale;
-		Gtk::Scale m_HScale, m_Scale_Digits, m_Scale_PageSize;
+		Gtk::Scale m_HScale, m_HScale2;
 
 		Gtk::Separator m_Separator;
 

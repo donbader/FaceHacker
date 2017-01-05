@@ -135,7 +135,12 @@ int main(int argc, char ** argv)
                 face.objectOperation(&face_program, cv::Mat(1, 1, CV_8UC3, cv::Scalar( Controlwindow.getColor().b,  Controlwindow.getColor().g,  Controlwindow.getColor().r)) , true);
                 break;
         }
-
+        float df_value = Controlwindow.getDiffuseFactor();
+        float sf_value = Controlwindow.getSpecularFactor();
+        vec3 df = vec3(df_value,df_value,df_value);
+        vec3 sf = vec3(sf_value,sf_value,sf_value);
+        face_program.setUniformVec3("materialDiffuseFactor", df);
+        face_program.setUniformVec3("materialSpecularFactor",sf);
         // );
         // if(face.hasMesh())
         // face.object()->setTexture();

@@ -13,6 +13,15 @@ ControlMenu::ControlMenu()
 
 		m_HBox_2D_Detect(Gtk::ORIENTATION_HORIZONTAL, 0),
 		m_HBox_3D_Mesh(Gtk::ORIENTATION_HORIZONTAL, 0),
+		m_HBox_Scroll(Gtk::ORIENTATION_HORIZONTAL, 0),
+		m_HBox_Scroll2(Gtk::ORIENTATION_HORIZONTAL, 0),
+
+		//scrollbar
+		// 初始值，最小，最大，?，滾輪一格移動距離，
+		m_adjustment( Gtk::Adjustment::create(0.3, 0.0, 1.1, 0.1, 0.1, 0.1) ),
+		m_adjustment2( Gtk::Adjustment::create(0.1, 0.0, 1.1, 0.1, 0.1, 0.1) ),
+		m_HScale(m_adjustment, Gtk::ORIENTATION_HORIZONTAL),
+		m_HScale2(m_adjustment2, Gtk::ORIENTATION_HORIZONTAL),
 
 		//TotalButton
 		m_Button_2D("-   2D LandMark"),
@@ -49,6 +58,14 @@ ControlMenu::ControlMenu()
 			set_title("ControlMenu");
 			set_default_size(400, 500);
 
+			//HScale:
+			m_HScale.set_digits(1);
+			m_HScale.set_value_pos(Gtk::POS_RIGHT);
+			m_HScale.set_draw_value();
+			m_HScale2.set_digits(1);
+			m_HScale2.set_value_pos(Gtk::POS_RIGHT);
+			m_HScale2.set_draw_value();
+
 			//Box+Button setting
 			add(m_VBox_Top);
 			m_VBox_Top.pack_start(m_Button_2D, Gtk::PACK_SHRINK);
@@ -80,6 +97,14 @@ ControlMenu::ControlMenu()
 				m_VBox_AR.pack_start(m_Button_AR3, Gtk::PACK_SHRINK);
 				m_VBox_AR.pack_start(m_Button_AR4, Gtk::PACK_SHRINK);
 				m_VBox_AR.pack_start(m_Button_AR5, Gtk::PACK_SHRINK);
+
+			m_VBox_Top.pack_start(m_HBox_Scroll, Gtk::PACK_SHRINK);
+				m_HBox_Scroll.pack_start(*Gtk::manage(new Gtk::Label("粗糙因子:   ", 0)), Gtk::PACK_SHRINK);
+				m_HBox_Scroll.pack_start(m_HScale);
+			m_VBox_Top.pack_start(m_HBox_Scroll2, Gtk::PACK_SHRINK);
+				m_HBox_Scroll2.pack_start(*Gtk::manage(new Gtk::Label("金屬因子:   ", 0)), Gtk::PACK_SHRINK);
+				m_HBox_Scroll2.pack_start(m_HScale2);
+
 			//TotalButton setting
 			m_Button_2D.signal_clicked().connect(sigc::mem_fun(*this,
 				&ControlMenu::on_button_2D_Menu));
@@ -405,4 +430,12 @@ rgb_color_t ControlMenu::getColor(){
 	color.b = m_Color_3D.get_blue() / 256;
 	return color;
 
+}
+
+float ControlMenu::getDiffuseFactor(){
+	return m_HScale.get_value();
+}
+
+float ControlMenu::getSpecularFactor(){
+	return m_HScale2.get_value();
 }

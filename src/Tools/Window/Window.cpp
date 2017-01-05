@@ -40,11 +40,16 @@ Window::Window(unsigned width, unsigned height, const char* name){
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
+
     // Accept fragment if it closer to the camera than the former one
     glDepthFunc(GL_LESS);
 
     // glEnable(GL_CULL_FACE);
     // glCullFace(GL_BACK);
+
+    // can render alpha
+    // glEnable(GL_BLEND);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glClearColor(0.3f, 0.3f, 0.3f, 0.0f);
 
